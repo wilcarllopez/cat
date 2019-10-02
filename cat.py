@@ -1,46 +1,85 @@
-choice = ''
-while choice!=6:
-    print("\n1 - Read/Open File\n2 - Create/Write File\n3 - Concatenate File\n4 - Edit File (Append)\n5 - Edit File (Prepend)\n6 - Exit")
-    choice = int(input("Choice: "))
-    if choice == 1:
-        filename = input("Filename: ")
-        with open(filename+".txt",'r') as f:
-            for line in f:
-                print(line, end='')
-    if choice == 2:
-        filename = input("Save as: ")
-        content = input("File content: ")
-        with open(filename+".txt",'w') as f:
-            f.write(str(content))
-    if choice == 3:
-        final_file = input("Save to: ")
-        num_files = int(input("Number of files to concatenate: "))
-        file_list = list()
-        for x in range(num_files):
-            file = input("Filename: ")
-            file_list.append(file+".txt")
-        
-        with open(final_file+'.txt', 'w') as outfile:
-            for fname in file_list:
-                with open(fname) as infile:
-                    for line in infile:
-                        outfile.write(line + " ")
-    if choice == 4:
-        filename = input("Filename to edit(append): ")
-        content = input("Content to add: ")
-        with open(filename+".txt",'a') as f:
-            f.write(" "+str(content))
-    if choice == 5:
-        filename = input("Filename to edit(prepend): ")
-        content = input("Content to add: ")
-        with open(filename+".txt",'r+') as f:
+#cat.py
+#Wilcarl Lopez
+#Import the argparse library
+import argparse
+
+#Start of functions
+def read_file(texts):
+    """Reads and open the text file"""
+    for text in texts:
+        with open(text + '.txt','r') as f:
+            t = ""
+            t += "\n" + f.read()
+    return "Successfully read the file.\n" + t
+
+def create_file(texts):
+    """Creates a text file"""
+    for text in texts:
+        with open(text+".txt",'w+') as f:
+            f.write(input("Content: "))
+    return "Successfully created a file"
+
+def write_file(texts):
+    """Write content for the file"""
+    for text in texts:
+        with open(text+".txt",'w') as f:
+            f.write(input("Content: "))
+    return "Successfully wrote a file"
+
+def cat_file(texts):
+    """Concatenate text files and save to new file"""
+    final_text = input("Save to: ")
+    
+    with open(final_text + '.txt', 'w') as outfile:
+        for text in texts:
+            with open(text + ".txt") as infile:
+                for line in infile:
+                    outfile.write(line + " ")
+    return "Successfully concatenated the file"
+
+def append_file(texts):
+    """Append content to the file"""
+    for text in texts:
+        with open(text+".txt",'a') as f:
+            f.write(input("Content to be added: "))
+    return "Successfully appended to the file"
+
+def prepend_file(texts):
+    """Prepend content to the file"""
+    content = input("Content to be added: ")
+    for text in texts:
+        with open(text+".txt",'r+') as f:
             old = f.read()
             f.seek(0)
-            f.write(str(content) + " " + old)
-    if choice == 6:
-        print("Thanks!")
-        break
-    
+            f.write(str(content)+ " " + old)
+    return "Successfully prepended to the file"
+#End of functions
 
 
-        
+parser = argparse.ArgumentParser()
+#Adding arguments
+parser.add_argument('texts', nargs='*', help='Filename of the text file/s')
+parser.add_argument('-r','--read', action='store_true', help='Read the text file')
+parser.add_argument('-c', '--create',action='store_true',help='Create a text file')
+parser.add_argument('-w', '--write',action='store_true', help='Write content for the text file')
+parser.add_argument('-cat', '--concat',action='store_true', help='Concatenate files and save it to another text file')
+parser.add_argument('-app', '--append',action='store_true', help='Append content to the end of file chosen')
+parser.add_argument('-prp', '--prepend',action='store_true', help='Prepend content at the start of file chosen')
+args = parser.parse_args()
+#End of addition of arguments
+
+#If-else statements
+if args.read:
+    print(read_file(args.texts))
+elif args.create:
+    print(create_file(args.texts))
+elif args.write:
+    print(write_file(args.texts))
+elif args.concat:
+    print(cat_file(args.texts))
+elif args.append:
+    print(append_file(args.texts))
+elif args.prepend:
+    print(prepend_file(args.texts))
+#End of if-else statements
+
